@@ -7,6 +7,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     this->setWindowTitle("Delta");
+//    this->showMaximized();
+//    this->setFixedSize(this->width(), this->height());
 }
 
 MainWindow::~MainWindow()
@@ -15,15 +17,19 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::on_actionSave_triggered()
-{
-
-}
-
 void MainWindow::on_actionOpen_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "Open Image", ".", "Image Files(*.png *.jpg *.jpeg)");
+    fileName = QFileDialog::getOpenFileName(this, "Open Image", ".", "Image Files(*.png *.jpg *.jpeg)");
 
     qDebug() << "File: " << fileName;
     this->setWindowTitle(fileName + " - Delta");
+    QPixmap pix(fileName);
+
+    ui->imageLabel->setPixmap(pix);
+    ui->imageLabel->setBackgroundRole(QPalette::Base);
+    ui->imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    ui->imageLabel->setScaledContents(true);
+
+    ui->scrollArea->setBackgroundRole(QPalette::Dark);
+
 }

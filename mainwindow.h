@@ -5,6 +5,10 @@
 #include <QDialog>
 #include <QFileDialog>
 #include <QDebug>
+#include <QPixmap>
+#include <QLabel>
+#include <QUndoView>
+#include <QAction>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -18,12 +22,14 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-private slots:
-    void on_actionSave_triggered();
 
+private slots:
     void on_actionOpen_triggered();
 
 private:
     Ui::MainWindow *ui;
+
+    QString fileName;
+    QAction *fitToWindowAct;
 };
 #endif // MAINWINDOW_H
