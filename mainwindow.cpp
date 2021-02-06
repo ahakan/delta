@@ -9,6 +9,8 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle("Delta");
 //    this->showMaximized();
 //    this->setFixedSize(this->width(), this->height());
+
+    new_image = Mat::zeros( openCVImage.size(), openCVImage.type() );
 }
 
 MainWindow::~MainWindow()
@@ -27,70 +29,8 @@ void MainWindow::changeEvent(QEvent *event) {
 }
 
 
-void MainWindow::on_actionOpen_triggered()
+QPixmap MainWindow::mat2Pixmap(Mat mat)
 {
-    fileName = QFileDialog::getOpenFileName(this, "Open Image", ".", "Image Files(*.png *.jpg *.jpeg)");
-
-    qDebug() << "File: " << fileName;
-    this->setWindowTitle(fileName + " - Delta");
-    pix=fileName;
-
-    ui->imageLabel->setPixmap(pix);
-    ui->imageLabel->setBackgroundRole(QPalette::Base);
-    ui->imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    ui->imageLabel->setScaledContents(true);
-
-    ui->scrollArea->setBackgroundRole(QPalette::Dark);
-    ui->imageLabel->resize(pix.width(),(pix.height()));
-    ui->scrollArea->resize(pix.width(),(pix.height()));
-    this->resize(pix.width(),(pix.height()));
-
-    ui->horizontalSlider->setSliderPosition(50);
-
-}
-
-void MainWindow::on_OpenImageButton_clicked()
-{
-    on_actionOpen_triggered();
-}
-
-void MainWindow::on_SaveImageButton_clicked()
-{
-    if(!pix.isNull())
-    {
-        pix.save(fileName);
-
-    }
-    else
-    {
-        ui->InfoLabel->setText("Lütfen önce resim seçiniz.");
-        ui->InfoLabel->setStyleSheet("font: 100 10pt 'Roboto';");
-    }
-}
-
-void MainWindow::on_horizontalSlider_valueChanged(int value)
-{
-    if(!pix.isNull())
-    {
-        openCVImage = cv::imread(fileName.toStdString());
-
-        Mat new_image = Mat::zeros( openCVImage.size(), openCVImage.type() );
-        int beta = value-50;       /*< Simple brightness control */
-
-        ui->BrightnessLabel->setText("Brightness ("+QString::number(beta)+")");
-        openCVImage.convertTo(new_image, -1, 1, beta);
-
-        updateCanvasLabel(new_image);
-    }
-    else
-    {
-        ui->InfoLabel->setText("Lütfen önce resim seçiniz.");
-        ui->InfoLabel->setStyleSheet("font: 100 10pt 'Roboto';");
-    }
-}
-
-void MainWindow::updateCanvasLabel(Mat mat){
-
     QPixmap pixmap;
     if(mat.type()==CV_8UC1)
     {
@@ -114,12 +54,173 @@ void MainWindow::updateCanvasLabel(Mat mat){
         QImage img(qImageBuffer, mat.cols, mat.rows, mat.step, QImage::Format_RGB888);
         pixmap = QPixmap::fromImage(img.rgbSwapped());
     }
-    else
-    {
-        qDebug() << "ERROR: Mat could not be converted to QImage or QPixmap.";
-        return;
-    }
 
+    return pixmap;
+}
+
+
+void MainWindow::updateImageLabel(Mat mat)
+{
+    QPixmap pixmap = mat2Pixmap(mat);
     ui->imageLabel->setPixmap(pixmap);
     ui->imageLabel->setScaledContents(true);
 }
+
+void MainWindow::showPixmap(QPixmap image)
+{
+    ui->imageLabel->setPixmap(image);
+    ui->imageLabel->setBackgroundRole(QPalette::Base);
+    ui->imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    ui->imageLabel->setScaledContents(true);
+    ui->imageLabel->resize(pix.width(),(pix.height()));
+}
+
+
+void MainWindow::on_actionOpen_triggered()
+{
+    fileName = QFileDialog::getOpenFileName(this, "Open Image", ".", "Image Files(*.png *.jpg *.jpeg)");
+
+    qDebug() << "File: " << fileName;
+    this->setWindowTitle(fileName + " - Delta");
+    pix=fileName;
+
+    showPixmap(pix);
+
+    if(!pix.isNull())
+    {
+        ui->scrollArea->setBackgroundRole(QPalette::Dark);
+
+        if(pix.width() >= 1920 || pix.height() >= 1080)
+        {
+            if(pix.width() >= 1920 && pix.height() >= 1080)
+            {
+                ui->scrollArea->resize(1920,1080);
+                this->resize(1920,1080);
+            }
+            else if(pix.width() >= 1920)
+            {
+                ui->scrollArea->resize(1920,pix.height());
+                this->resize(1920,pix.height());
+            }
+            else
+            {
+                ui->scrollArea->resize(pix.width(),1080);
+                this->resize(pix.width(),1080);
+            }
+        }
+        else
+        {
+            ui->scrollArea->resize(pix.width(),pix.height());
+            this->resize(pix.width(),pix.height());
+        }
+
+        ui->horizontalSlider->setSliderPosition(50);
+        ui->ContrastSlider->setSliderPosition(100);
+    }
+}
+
+void MainWindow::on_OpenImageButton_clicked()
+{
+    on_actionOpen_triggered();
+}
+
+void MainWindow::on_SaveImageButton_clicked()
+{
+    QPixmap pixmap = mat2Pixmap(new_image);
+
+    if(!pix.isNull())
+    {
+        if(!pixmap.isNull())
+        {
+            pixmap.save(fileName);
+            ui->InfoLabel->setText("Kaydedildi.");
+            ui->InfoLabel->setStyleSheet("font: 100 10pt 'Roboto';");
+        }
+        else
+        {
+            ui->InfoLabel->setText("Resimde bir değişiklik yapılmadı.");
+            ui->InfoLabel->setStyleSheet("font: 100 10pt 'Roboto';");
+        }
+
+    }
+    else
+    {
+        ui->InfoLabel->setText("Lütfen önce resim seçiniz.");
+        ui->InfoLabel->setStyleSheet("font: 100 10pt 'Roboto';");
+    }
+}
+
+
+void MainWindow::on_SaveAsImageButton_clicked()
+{
+    QPixmap pixmap = mat2Pixmap(new_image);
+
+    if(!pix.isNull())
+    {
+        if(!pixmap.isNull())
+        {
+            saveAsFileName = QFileDialog::getSaveFileName(this,
+                   tr("Save Address Book"), "",
+                   tr("JPEG Image(*.jpg);;PNG Image(*.png);;"));
+
+            pixmap.save(saveAsFileName);
+            ui->InfoLabel->setText("Kaydedildi.");
+            ui->InfoLabel->setStyleSheet("font: 100 10pt 'Roboto';");
+        }
+        else
+        {
+            ui->InfoLabel->setText("Resimde bir değişiklik yapılmadı.");
+            ui->InfoLabel->setStyleSheet("font: 100 10pt 'Roboto';");
+        }
+
+    }
+    else
+    {
+        ui->InfoLabel->setText("Lütfen önce resim seçiniz.");
+        ui->InfoLabel->setStyleSheet("font: 100 10pt 'Roboto';");
+    }
+}
+
+
+void MainWindow::on_horizontalSlider_valueChanged(int value)
+{
+    if(!pix.isNull())
+    {
+        openCVImage = cv::imread(fileName.toStdString());
+
+        int beta = value-50;       /*< Simple brightness control */
+
+        ui->BrightnessLabel->setText("Brightness ("+QString::number(beta)+")");
+        openCVImage.convertTo(new_image, -1, 1, beta);
+
+        updateImageLabel(new_image);
+    }
+    else
+    {
+        ui->InfoLabel->setText("Lütfen önce resim seçiniz.");
+        ui->InfoLabel->setStyleSheet("font: 100 10pt 'Roboto';");
+    }
+}
+
+
+void MainWindow::on_ContrastSlider_valueChanged(int value)
+{
+    if(!pix.isNull())
+    {
+        openCVImage = cv::imread(fileName.toStdString());
+
+        float alpha = value/100.0;       /*< Simple brightness control */
+
+        ui->ContrastLabel->setText("Contrast ("+QString::number(alpha)+")");
+        openCVImage.convertTo(new_image, -1, alpha, 0);
+
+        updateImageLabel(new_image);
+    }
+    else
+    {
+        ui->InfoLabel->setText("Lütfen önce resim seçiniz.");
+        ui->InfoLabel->setStyleSheet("font: 100 10pt 'Roboto';");
+    }
+}
+
+

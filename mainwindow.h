@@ -26,7 +26,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void changeEvent(QEvent *event);
-    void updateCanvasLabel(Mat mat);
+    void updateImageLabel(Mat mat);
+    void showPixmap(QPixmap image);
+    QPixmap mat2Pixmap(Mat mat);
 
 private slots:
     void on_actionOpen_triggered();
@@ -37,11 +39,17 @@ private slots:
 
     void on_horizontalSlider_valueChanged(int value);
 
+    void on_ContrastSlider_valueChanged(int value);
+
+    void on_SaveAsImageButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 
     QString fileName;
+    QString saveAsFileName;
     QPixmap pix;
     Mat openCVImage;
+    Mat new_image;
 };
 #endif // MAINWINDOW_H
