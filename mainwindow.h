@@ -9,8 +9,6 @@
 #include <QDebug>
 #include <QPixmap>
 #include <QLabel>
-#include <QUndoView>
-#include <QAction>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -25,7 +23,6 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    void changeEvent(QEvent *event);
     void updateImageLabel(Mat mat);
     void showPixmap(QPixmap image);
     QPixmap mat2Pixmap(Mat mat);
@@ -42,6 +39,8 @@ private slots:
     void on_ContrastSlider_valueChanged(int value);
 
     void on_SaveAsImageButton_clicked();
+
+    void on_ZoomSlider_valueChanged(int value);
 
 private:
     Ui::MainWindow *ui;

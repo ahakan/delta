@@ -18,17 +18,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::changeEvent(QEvent *event) {
-    qDebug() << "Deneme";
-
-    if (event->type() == QEvent::WindowStateChange) {
-        ui->imageLabel->resize(pix.width(),(pix.height()));
-        ui->scrollArea->resize(pix.width(),(pix.height()));
-        this->resize(pix.width(),(pix.height()));
-    }
-}
-
-
 QPixmap MainWindow::mat2Pixmap(Mat mat)
 {
     QPixmap pixmap;
@@ -117,6 +106,8 @@ void MainWindow::on_actionOpen_triggered()
         ui->horizontalSlider->setSliderPosition(50);
         ui->ContrastSlider->setSliderPosition(100);
     }
+
+    ui->InfoLabel->hide();
 }
 
 void MainWindow::on_OpenImageButton_clicked()
@@ -224,3 +215,20 @@ void MainWindow::on_ContrastSlider_valueChanged(int value)
 }
 
 
+
+void MainWindow::on_ZoomSlider_valueChanged(int value)
+{
+    if(!pix.isNull())
+    {
+        double scaleFactor = 1;
+        scaleFactor *= value/50.0;
+        ui->imageLabel->resize(scaleFactor * ui->imageLabel->pixmap(Qt::ReturnByValue).size());
+        ui->ZoomLabel->setText("Zoom ("+QString::number(scaleFactor)+") ");
+    }
+    else
+    {
+        ui->InfoLabel->setText("Lütfen önce resim seçiniz.");
+        ui->InfoLabel->setStyleSheet("font: 100 10pt 'Roboto';");
+    }
+
+}
