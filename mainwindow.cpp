@@ -11,6 +11,9 @@ MainWindow::MainWindow(QWidget *parent)
 //    this->setFixedSize(this->width(), this->height());
 
     new_image = Mat::zeros( openCVImage.size(), openCVImage.type() );
+
+    this->statusBar()->addPermanentWidget(ui->ZoomLabel);
+    this->statusBar()->addPermanentWidget(ui->ZoomSlider);
 }
 
 MainWindow::~MainWindow()
@@ -64,6 +67,11 @@ void MainWindow::showPixmap(QPixmap image)
     ui->imageLabel->resize(pix.width(),(pix.height()));
 }
 
+void MainWindow::showStatusBarMessage(QString message)
+{
+    this->statusBar()->showMessage(message);
+}
+
 
 void MainWindow::on_actionOpen_triggered()
 {
@@ -106,8 +114,6 @@ void MainWindow::on_actionOpen_triggered()
         ui->horizontalSlider->setSliderPosition(50);
         ui->ContrastSlider->setSliderPosition(100);
     }
-
-    ui->InfoLabel->hide();
 }
 
 void MainWindow::on_OpenImageButton_clicked()
@@ -124,20 +130,17 @@ void MainWindow::on_SaveImageButton_clicked()
         if(!pixmap.isNull())
         {
             pixmap.save(fileName);
-            ui->InfoLabel->setText("Kaydedildi.");
-            ui->InfoLabel->setStyleSheet("font: 100 10pt 'Roboto';");
+            showStatusBarMessage("Kaydedildi.");
         }
         else
         {
-            ui->InfoLabel->setText("Resimde bir değişiklik yapılmadı.");
-            ui->InfoLabel->setStyleSheet("font: 100 10pt 'Roboto';");
+            showStatusBarMessage("Resimde bir değişiklik yapılmadı.");
         }
 
     }
     else
     {
-        ui->InfoLabel->setText("Lütfen önce resim seçiniz.");
-        ui->InfoLabel->setStyleSheet("font: 100 10pt 'Roboto';");
+        showStatusBarMessage("Lütfen önce resim seçiniz.");
     }
 }
 
@@ -155,20 +158,17 @@ void MainWindow::on_SaveAsImageButton_clicked()
                    tr("JPEG Image(*.jpg);;PNG Image(*.png);;"));
 
             pixmap.save(saveAsFileName);
-            ui->InfoLabel->setText("Kaydedildi.");
-            ui->InfoLabel->setStyleSheet("font: 100 10pt 'Roboto';");
+            showStatusBarMessage("Kaydedildi.");
         }
         else
         {
-            ui->InfoLabel->setText("Resimde bir değişiklik yapılmadı.");
-            ui->InfoLabel->setStyleSheet("font: 100 10pt 'Roboto';");
+            showStatusBarMessage("Resimde bir değişiklik yapılmadı.");
         }
 
     }
     else
     {
-        ui->InfoLabel->setText("Lütfen önce resim seçiniz.");
-        ui->InfoLabel->setStyleSheet("font: 100 10pt 'Roboto';");
+        showStatusBarMessage("Lütfen önce resim seçiniz.");
     }
 }
 
@@ -188,8 +188,7 @@ void MainWindow::on_horizontalSlider_valueChanged(int value)
     }
     else
     {
-        ui->InfoLabel->setText("Lütfen önce resim seçiniz.");
-        ui->InfoLabel->setStyleSheet("font: 100 10pt 'Roboto';");
+        showStatusBarMessage("Lütfen önce resim seçiniz.");
     }
 }
 
@@ -209,11 +208,9 @@ void MainWindow::on_ContrastSlider_valueChanged(int value)
     }
     else
     {
-        ui->InfoLabel->setText("Lütfen önce resim seçiniz.");
-        ui->InfoLabel->setStyleSheet("font: 100 10pt 'Roboto';");
+        showStatusBarMessage("Lütfen önce resim seçiniz.");
     }
 }
-
 
 
 void MainWindow::on_ZoomSlider_valueChanged(int value)
@@ -227,8 +224,31 @@ void MainWindow::on_ZoomSlider_valueChanged(int value)
     }
     else
     {
-        ui->InfoLabel->setText("Lütfen önce resim seçiniz.");
-        ui->InfoLabel->setStyleSheet("font: 100 10pt 'Roboto';");
+        showStatusBarMessage("Lütfen önce resim seçiniz.");
     }
 
+}
+
+
+void MainWindow::on_QuitButton_clicked()
+{
+    QCoreApplication::quit();
+}
+
+
+void MainWindow::on_actionSave_triggered()
+{
+    on_SaveImageButton_clicked();
+}
+
+
+void MainWindow::on_actionSave_As_triggered()
+{
+    on_SaveAsImageButton_clicked();
+}
+
+
+void MainWindow::on_actionQuit_triggered()
+{
+    on_QuitButton_clicked();
 }

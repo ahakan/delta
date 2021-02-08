@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <QPixmap>
 #include <QLabel>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -23,11 +24,14 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    void updateImageLabel(Mat mat);
-    void showPixmap(QPixmap image);
-    QPixmap mat2Pixmap(Mat mat);
 
 private slots:
+    void updateImageLabel(Mat mat);
+
+    void showPixmap(QPixmap image);
+
+    QPixmap mat2Pixmap(Mat mat);
+
     void on_actionOpen_triggered();
 
     void on_OpenImageButton_clicked();
@@ -41,6 +45,16 @@ private slots:
     void on_SaveAsImageButton_clicked();
 
     void on_ZoomSlider_valueChanged(int value);
+
+    void on_QuitButton_clicked();
+
+    void on_actionSave_triggered();
+
+    void on_actionSave_As_triggered();
+
+    void on_actionQuit_triggered();
+
+    void showStatusBarMessage(QString message);
 
 private:
     Ui::MainWindow *ui;
