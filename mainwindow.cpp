@@ -151,19 +151,13 @@ void MainWindow::on_SaveAsImageButton_clicked()
 
     if(!pix.isNull())
     {
-        if(!pixmap.isNull())
-        {
-            saveAsFileName = QFileDialog::getSaveFileName(this,
-                   tr("Save Address Book"), "",
-                   tr("JPEG Image(*.jpg);;PNG Image(*.png);;"));
 
-            pixmap.save(saveAsFileName);
-            showStatusBarMessage("Kaydedildi.");
-        }
-        else
-        {
-            showStatusBarMessage("Resimde bir değişiklik yapılmadı.");
-        }
+        saveAsFileName = QFileDialog::getSaveFileName(this,
+               tr("Save Address Book"), "",
+               tr("JPEG Image(*.jpg);;PNG Image(*.png);;"));
+
+        pixmap.save(saveAsFileName);
+        showStatusBarMessage("Kaydedildi.");
 
     }
     else
