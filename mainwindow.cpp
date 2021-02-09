@@ -57,16 +57,25 @@ void MainWindow::updateImageLabel(Mat mat)
 {
     QPixmap pixmap = mat2Pixmap(mat);
     ui->imageLabel->setPixmap(pixmap);
-    ui->imageLabel->setScaledContents(true);
+    ui->imageLabel->resize( pix.width()/3, pix.height()/3 );
 }
 
 void MainWindow::showPixmap(QPixmap image)
 {
     ui->imageLabel->setPixmap(image);
-    ui->imageLabel->setBackgroundRole(QPalette::Base);
-    ui->imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    ui->imageLabel->setScaledContents(true);
-    ui->imageLabel->resize(pix.width(),(pix.height()));
+
+    if(image.width() >= 1920 || image.height() >= 1080)
+    {
+        this->showMaximized();
+        ui->imageLabel->resize( this->width()-166, this->height()-56);
+        ui->scrollArea->resize( this->width()-166, this->height()-56);
+        ui->scrollAreaWidgetContents->resize( this->width()-166, this->height()-56);
+    }
+    else
+    {
+        this->showMaximized();
+    }
+
 }
 
 void MainWindow::showStatusBarMessage(QString message)
@@ -83,7 +92,7 @@ void MainWindow::getImageDirFiles(QString fileName){
 
         //std::cerr << fi.fileName().toStdString() << std::endl ;
 
-        std::cerr << base.toStdString() << std::endl ;
+        std::cerr << "Image directory: " + base.toStdString() << std::endl ;
 
         QDir directory(base);
 
@@ -91,68 +100,60 @@ void MainWindow::getImageDirFiles(QString fileName){
 
         allImagesSize = allImages.length();
 
-        std::cerr << allImagesSize << std::endl ;
+        std::cerr << "Total images: " + std::to_string(allImagesSize) << std::endl ;
 
-        imgQue = 0;
-        foreach(QString filename, allImages) {
-            if(fi.fileName()!=filename)
-            {
-                imgQue++;
+        if(allImagesSize!=1)
+        {
+            imgQue = 0;
+            foreach(QString filename, allImages) {
+                if(fi.fileName()!=filename)
+                {
+                    imgQue++;
+                }
+                else
+                {
+                    break;
+                }
+                // std::cerr << filename.toStdString() << std::endl ;
             }
-            else
-            {
-                break;
-            }
-            std::cerr << filename.toStdString() << std::endl ;
+            std::cerr << "Current images: " + std::to_string(imgQue) << std::endl ;
+            // std::cerr << allImages[imgQue-1].toStdString() << std::endl ;
         }
-        std::cerr << imgQue << std::endl ;
-        std::cerr << allImages[imgQue-1].toStdString() << std::endl ;
+        else
+        {
+            ui->previousButton->setDisabled(true);
+            ui->nextButton->setDisabled(true);
+        }
     }
+}
+
+void MainWindow::resetAllWidget()
+{
+    ui->brightnessSlider->setSliderPosition(50);
+    ui->ContrastSlider->setSliderPosition(100);
+    ui->ZoomSlider->setSliderPosition(50);
+
+    // clear mat image
+    new_image.release();
 }
 
 void MainWindow::on_actionOpen_triggered()
 {
     fileName = QFileDialog::getOpenFileName(this, "Open Image", ".", "Image Files(*.png *.jpg *.jpeg)");
 
-    std::cerr << fileName.toStdString() << std::endl ;
+    // std::cerr << fileName.toStdString() << std::endl ;
 
     getImageDirFiles(fileName);
 
     this->setWindowTitle(fileName + " - Delta");
-    pix=fileName;
 
-    showPixmap(pix);
+    pix=fileName;
 
     if(!pix.isNull())
     {
-        ui->scrollArea->setBackgroundRole(QPalette::Dark);
+        showPixmap(pix);
 
-        if(pix.width() >= 1920 || pix.height() >= 1080)
-        {
-            if(pix.width() >= 1920 && pix.height() >= 1080)
-            {
-                ui->scrollArea->resize(1920,1080);
-                this->resize(1920,1080);
-            }
-            else if(pix.width() >= 1920)
-            {
-                ui->scrollArea->resize(1920,pix.height());
-                this->resize(1920,pix.height());
-            }
-            else
-            {
-                ui->scrollArea->resize(pix.width(),1080);
-                this->resize(pix.width(),1080);
-            }
-        }
-        else
-        {
-            ui->scrollArea->resize(pix.width(),pix.height());
-            this->resize(pix.width(),pix.height());
-        }
-
-        ui->horizontalSlider->setSliderPosition(50);
-        ui->ContrastSlider->setSliderPosition(100);
+        resetAllWidget();
     }
 }
 
@@ -187,17 +188,33 @@ void MainWindow::on_SaveImageButton_clicked()
 
 void MainWindow::on_SaveAsImageButton_clicked()
 {
-    QPixmap pixmap = mat2Pixmap(new_image);
+    QPixmap pixmap;
+    if(!new_image.empty())
+    {
+        pixmap = mat2Pixmap(new_image);
+    }
+    else
+    {
+        pixmap = fileName;
+    }
 
     if(!pix.isNull())
     {
-
         saveAsFileName = QFileDialog::getSaveFileName(this,
                tr("Save Address Book"), "",
                tr("JPEG Image(*.jpg);;PNG Image(*.png);;"));
 
-        pixmap.save(saveAsFileName);
-        showStatusBarMessage("Kaydedildi.");
+        if(!saveAsFileName.isEmpty() && !saveAsFileName.isNull())
+        {
+            pixmap.save(saveAsFileName);
+            showStatusBarMessage("Kaydedildi.");
+            // new-search after save as
+            getImageDirFiles(fileName);
+        }
+        else
+        {
+            showStatusBarMessage("Vazgeçildi.");
+        }
 
     }
     else
@@ -207,7 +224,7 @@ void MainWindow::on_SaveAsImageButton_clicked()
 }
 
 
-void MainWindow::on_horizontalSlider_valueChanged(int value)
+void MainWindow::on_brightnessSlider_valueChanged(int value)
 {
     if(!pix.isNull())
     {
@@ -249,17 +266,17 @@ void MainWindow::on_ContrastSlider_valueChanged(int value)
 
 void MainWindow::on_ZoomSlider_valueChanged(int value)
 {
-    if(!pix.isNull())
-    {
-        double scaleFactor = 1;
-        scaleFactor *= value/50.0;
-        ui->imageLabel->resize(scaleFactor * ui->imageLabel->pixmap(Qt::ReturnByValue).size());
-        ui->ZoomLabel->setText("Zoom ("+QString::number(scaleFactor)+") ");
-    }
-    else
-    {
-        showStatusBarMessage("Lütfen önce resim seçiniz.");
-    }
+//    if(!pix.isNull())
+//    {
+//        double scaleFactor = 1;
+//        scaleFactor *= value/50.0;
+//        ui->imageLabel->resize(scaleFactor * ui->imageLabel->pixmap(Qt::ReturnByValue).size());
+//        ui->ZoomLabel->setText("Zoom ("+QString::number(scaleFactor)+") ");
+//    }
+//    else
+//    {
+//        showStatusBarMessage("Lütfen önce resim seçiniz.");
+//    }
 
 }
 
@@ -296,6 +313,8 @@ void MainWindow::on_nextButton_clicked()
         this->setWindowTitle(nextImage + " - Delta");
 
         showPixmap(nextImage);
+        fileName=nextImage;
+        resetAllWidget();
 
         std::cerr << nextImage.toStdString() << std::endl ;
     }
@@ -307,6 +326,38 @@ void MainWindow::on_nextButton_clicked()
         this->setWindowTitle(nextImage + " - Delta");
 
         showPixmap(nextImage);
+        fileName=nextImage;
+        resetAllWidget();
+
+        std::cerr << nextImage.toStdString() << std::endl ;
+    }
+}
+
+void MainWindow::on_previousButton_clicked()
+{
+    if(imgQue > 0)
+    {
+        imgQue--;
+        std::cerr << imgQue << std::endl ;
+        QString nextImage = base + "/" + allImages[imgQue];
+        this->setWindowTitle(nextImage + " - Delta");
+
+        showPixmap(nextImage);
+        fileName=nextImage;
+        resetAllWidget();
+
+        std::cerr << nextImage.toStdString() << std::endl ;
+    }
+    else
+    {
+        imgQue = allImagesSize-1;
+
+        QString nextImage = base + "/" + allImages[imgQue];
+        this->setWindowTitle(nextImage + " - Delta");
+
+        showPixmap(nextImage);
+        fileName=nextImage;
+        resetAllWidget();
 
         std::cerr << nextImage.toStdString() << std::endl ;
     }

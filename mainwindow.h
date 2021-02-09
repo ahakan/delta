@@ -8,7 +8,7 @@
 #include <QFileDialog>
 #include <QPixmap>
 #include <QLabel>
-#include <QTimer>
+#include <QSizePolicy>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -33,13 +33,15 @@ private slots:
 
     void getImageDirFiles(QString fileName);
 
+    void resetAllWidget();
+
     void on_actionOpen_triggered();
 
     void on_OpenImageButton_clicked();
 
     void on_SaveImageButton_clicked();
 
-    void on_horizontalSlider_valueChanged(int value);
+    void on_brightnessSlider_valueChanged(int value);
 
     void on_ContrastSlider_valueChanged(int value);
 
@@ -58,6 +60,8 @@ private slots:
     void showStatusBarMessage(QString message);
 
     void on_nextButton_clicked();
+
+    void on_previousButton_clicked();
 
 private:
     Ui::MainWindow *ui;
