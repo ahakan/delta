@@ -116,6 +116,8 @@ void MainWindow::getImageDirFiles(QString fileName){
                 }
                 // std::cerr << filename.toStdString() << std::endl ;
             }
+            ui->previousButton->setEnabled(true);
+            ui->nextButton->setEnabled(true);
             std::cerr << "Current images: " + std::to_string(imgQue) << std::endl ;
             // std::cerr << allImages[imgQue-1].toStdString() << std::endl ;
         }
