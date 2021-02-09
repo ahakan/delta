@@ -14,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->statusBar()->addPermanentWidget(ui->ZoomLabel);
     this->statusBar()->addPermanentWidget(ui->ZoomSlider);
+
+    std::cerr << "Delta Image Viewer" << std::endl ;
 }
 
 MainWindow::~MainWindow()
@@ -73,11 +75,49 @@ void MainWindow::showStatusBarMessage(QString message)
 }
 
 
+void MainWindow::getImageDirFiles(QString fileName){
+
+    if(!fileName.isEmpty()){
+        QFileInfo fi(fileName);
+        base = fi.absolutePath();
+
+        //std::cerr << fi.fileName().toStdString() << std::endl ;
+
+        std::cerr << base.toStdString() << std::endl ;
+
+        QDir directory(base);
+
+        allImages = directory.entryList(QStringList() << "*.png" << "*.jpg" << "*.jpeg", QDir::Files);
+
+        allImagesSize = allImages.length();
+
+        std::cerr << allImagesSize << std::endl ;
+
+        imgQue = 0;
+        foreach(QString filename, allImages) {
+            if(fi.fileName()!=filename)
+            {
+                imgQue++;
+            }
+            else
+            {
+                break;
+            }
+            std::cerr << filename.toStdString() << std::endl ;
+        }
+        std::cerr << imgQue << std::endl ;
+        std::cerr << allImages[imgQue-1].toStdString() << std::endl ;
+    }
+}
+
 void MainWindow::on_actionOpen_triggered()
 {
     fileName = QFileDialog::getOpenFileName(this, "Open Image", ".", "Image Files(*.png *.jpg *.jpeg)");
 
-    qDebug() << "File: " << fileName;
+    std::cerr << fileName.toStdString() << std::endl ;
+
+    getImageDirFiles(fileName);
+
     this->setWindowTitle(fileName + " - Delta");
     pix=fileName;
 
@@ -245,4 +285,29 @@ void MainWindow::on_actionSave_As_triggered()
 void MainWindow::on_actionQuit_triggered()
 {
     on_QuitButton_clicked();
+}
+
+void MainWindow::on_nextButton_clicked()
+{
+    if(imgQue+1 < allImagesSize)
+    {
+        imgQue++;
+        QString nextImage = base + "/" + allImages[imgQue];
+        this->setWindowTitle(nextImage + " - Delta");
+
+        showPixmap(nextImage);
+
+        std::cerr << nextImage.toStdString() << std::endl ;
+    }
+    else
+    {
+        imgQue = 0;
+
+        QString nextImage = base + "/" + allImages[imgQue];
+        this->setWindowTitle(nextImage + " - Delta");
+
+        showPixmap(nextImage);
+
+        std::cerr << nextImage.toStdString() << std::endl ;
+    }
 }

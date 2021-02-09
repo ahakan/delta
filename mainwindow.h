@@ -6,7 +6,6 @@
 #include <QMainWindow>
 #include <QDialog>
 #include <QFileDialog>
-#include <QDebug>
 #include <QPixmap>
 #include <QLabel>
 #include <QTimer>
@@ -32,6 +31,8 @@ private slots:
 
     QPixmap mat2Pixmap(Mat mat);
 
+    void getImageDirFiles(QString fileName);
+
     void on_actionOpen_triggered();
 
     void on_OpenImageButton_clicked();
@@ -56,6 +57,8 @@ private slots:
 
     void showStatusBarMessage(QString message);
 
+    void on_nextButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -64,5 +67,11 @@ private:
     QPixmap pix;
     Mat openCVImage;
     Mat new_image;
+
+    QString base;
+    QStringList allImages;
+    int allImagesSize;
+    int imgQue;
+
 };
 #endif // MAINWINDOW_H
