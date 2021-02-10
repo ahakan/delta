@@ -138,6 +138,8 @@ void MainWindow::resetAllWidget()
     ui->ZoomSlider->setSliderPosition(50);
     ui->ZoomLabel->setText("Zoom");
     ui->scrollAreaWidgetContents->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    ui->imageLabel->resize(0.99*ui->scrollArea->size());
+    ui->scrollAreaWidgetContents->setMinimumSize(0.99*ui->scrollArea->size());
 
     // clear mat image
     new_image.release();
@@ -370,3 +372,48 @@ void MainWindow::on_previousButton_clicked()
         std::cerr << nextImage.toStdString() << std::endl ;
     }
 }
+
+
+void MainWindow::mousePressEvent(QMouseEvent *event)
+{
+    ui->imageLabel->resize(ui->imageLabel->pixmap(Qt::ReturnByValue).size());
+    ui->scrollAreaWidgetContents->setMinimumSize(ui->imageLabel->pixmap(Qt::ReturnByValue).size());
+    ui->scrollAreaWidgetContents->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+    origin = event->pos();
+    std::cerr << "X: " << std::to_string(origin.x()) << " Y: " << std::to_string(origin.y()) << std::endl;
+
+    if (!rubberBand)
+        rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
+    rubberBand->setGeometry(QRect(origin, QSize()));
+    rubberBand->show();
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    rubberBand->setGeometry(QRect(origin, event->pos()).normalized());
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *event)
+{
+    sonNokta = event->pos();
+
+    rubberBand->hide();
+
+    QPainter painter(&pix);
+    painter.drawRect(origin.x()-164,origin.y()-36,sonNokta.x()-origin.x(),sonNokta.y()-origin.y());
+    ui->imageLabel->setPixmap(pix);
+
+}
+
+void MainWindow::paintEvent(QPaintEvent *event)
+{
+    QRect rect = event->rect();
+
+}
+
+void MainWindow::draw(QRect &rect)
+{
+
+}
+

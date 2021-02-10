@@ -10,6 +10,9 @@
 #include <QLabel>
 #include <QSizePolicy>
 #include <QLayout>
+#include <QRubberBand>
+#include <QMouseEvent>
+#include <QPainter>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -64,6 +67,13 @@ private slots:
 
     void on_previousButton_clicked();
 
+
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void paintEvent(QPaintEvent *event);
+    void draw(QRect &rect);
+
 private:
     Ui::MainWindow *ui;
 
@@ -77,6 +87,11 @@ private:
     QStringList allImages;
     int allImagesSize;
     int imgQue;
+
+
+    QRubberBand *rubberBand;
+    QPoint origin;
+    QPoint sonNokta;
 
 };
 #endif // MAINWINDOW_H
