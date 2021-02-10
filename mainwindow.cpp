@@ -132,8 +132,12 @@ void MainWindow::getImageDirFiles(QString fileName){
 void MainWindow::resetAllWidget()
 {
     ui->brightnessSlider->setSliderPosition(50);
+    ui->BrightnessLabel->setText("Brightness");
     ui->ContrastSlider->setSliderPosition(100);
+    ui->ContrastLabel->setText("Contrast");
     ui->ZoomSlider->setSliderPosition(50);
+    ui->ZoomLabel->setText("Zoom");
+    ui->scrollAreaWidgetContents->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 
     // clear mat image
     new_image.release();
@@ -268,17 +272,19 @@ void MainWindow::on_ContrastSlider_valueChanged(int value)
 
 void MainWindow::on_ZoomSlider_valueChanged(int value)
 {
-//    if(!pix.isNull())
-//    {
-//        double scaleFactor = 1;
-//        scaleFactor *= value/50.0;
-//        ui->imageLabel->resize(scaleFactor * ui->imageLabel->pixmap(Qt::ReturnByValue).size());
-//        ui->ZoomLabel->setText("Zoom ("+QString::number(scaleFactor)+") ");
-//    }
-//    else
-//    {
-//        showStatusBarMessage("Lütfen önce resim seçiniz.");
-//    }
+    if(!pix.isNull())
+    {
+        double scaleFactor = 1;
+        scaleFactor *= value/100.0;
+        ui->imageLabel->resize(scaleFactor * ui->imageLabel->pixmap(Qt::ReturnByValue).size());
+        ui->ZoomLabel->setText("Zoom ("+QString::number(scaleFactor*2)+") ");
+        ui->scrollAreaWidgetContents->setMinimumSize(scaleFactor * ui->imageLabel->pixmap(Qt::ReturnByValue).size());
+        ui->scrollAreaWidgetContents->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    }
+    else
+    {
+        showStatusBarMessage("Lütfen önce resim seçiniz.");
+    }
 
 }
 

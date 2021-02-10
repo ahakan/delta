@@ -9,6 +9,7 @@
 #include <QPixmap>
 #include <QLabel>
 #include <QSizePolicy>
+#include <QLayout>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
