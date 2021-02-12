@@ -65,23 +65,26 @@ void MainWindow::updateImageLabel(Mat mat)
 {
     QPixmap pixmap = mat2Pixmap(mat);
     ui->imageLabel->setPixmap(pixmap);
-    ui->imageLabel->resize( pix.width()/3, pix.height()/3 );
+    //ui->imageLabel->resize( pix.width()/3, pix.height()/3 );
+    ui->imageLabel->resize( this->width()-166, this->height()-56);
 }
 
 void MainWindow::showPixmap(QPixmap image)
 {
     ui->imageLabel->setPixmap(image);
 
-    if(image.width() >= 1920 || image.height() >= 1080)
+    if(image.width() >= 1920 && image.height() >= 1080)
     {
         this->showMaximized();
+        ui->imageLabel->setScaledContents(true);
         ui->imageLabel->resize( this->width()-166, this->height()-56);
         ui->scrollArea->resize( this->width()-166, this->height()-56);
         ui->scrollAreaWidgetContents->resize( this->width()-166, this->height()-56);
     }
     else
     {
-        this->showMaximized();
+        this->showNormal();
+        ui->imageLabel->setScaledContents(false);
     }
 
 }
@@ -151,6 +154,16 @@ void MainWindow::resetAllWidget()
 
     // clear mat image
     new_image.release();
+    statusBarCheck(false);
+
+}
+
+void MainWindow::statusBarCheck(bool trueFalse, QString question)
+{
+    ui->statusBarLabel->setVisible(trueFalse);
+    ui->statusBarLabel->setText(question);
+    ui->cropButton->setVisible(trueFalse);
+    ui->cancelButton->setVisible(trueFalse);
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -167,9 +180,9 @@ void MainWindow::on_actionOpen_triggered()
 
     if(!pix.isNull())
     {
-        showPixmap(pix);
-
         resetAllWidget();
+
+        showPixmap(pix);
     }
 }
 
@@ -441,21 +454,25 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
     b.setX(int(b.x() * sx));
     b.setY(int(b.y() * sy));
 
-    std::cerr << "X: " << std::to_string(a.x()) << " - " << std::to_string(a.y()) << " Y: " << std::to_string(b.x()) << " - "<< std::to_string(b.y()) << std::endl;
-
     QRect drawRect(a, b);
 
-    QPainter painter(&pix);
-    painter.drawRect(drawRect);
-    ui->imageLabel->setPixmap(pix);
+    QPixmap newPix(pix);
 
-    ui->statusBarLabel->setVisible(true);
-    ui->statusBarLabel->setText("Resmi kesmek istediğinize emin misiniz?");
-    ui->cropButton->setVisible(true);
-    ui->cancelButton->setVisible(true);
+    if(!(a.x()<=0 || a.y()<=0 || b.x()<=0 || b.y()<=0))
+    {
+        std::cerr << "X: " << std::to_string(a.x()) << " - " << std::to_string(a.y()) << " Y: " << std::to_string(b.x()) << " - "<< std::to_string(b.y()) << std::endl;
 
+        QPainter painter(&newPix);
+        painter.drawRect(drawRect);
+        ui->imageLabel->setPixmap(newPix);
+        statusBarCheck(true, "Resmi kesmek istediğinize emin misiniz?");
+    }
 }
 
 
+void MainWindow::on_cancelButton_clicked()
+{
+    statusBarCheck(false);
 
-
+    ui->imageLabel->setPixmap(pix);
+}

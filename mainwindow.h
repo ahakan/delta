@@ -40,6 +40,8 @@ private slots:
 
     void resetAllWidget();
 
+    void statusBarCheck(bool trueFalse, QString question="");
+
     void on_actionOpen_triggered();
 
     void on_OpenImageButton_clicked();
@@ -74,6 +76,8 @@ private slots:
 
     void mouseReleaseEvent(QMouseEvent *event);
 
+
+    void on_cancelButton_clicked();
 
 private:
     Ui::MainWindow *ui;
