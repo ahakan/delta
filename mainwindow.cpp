@@ -12,8 +12,16 @@ MainWindow::MainWindow(QWidget *parent)
 
     new_image = Mat::zeros( openCVImage.size(), openCVImage.type() );
 
+    this->statusBar()->addWidget(ui->statusBarLabel);
+    this->statusBar()->addWidget(ui->cropButton);
+    this->statusBar()->addWidget(ui->cancelButton);
+
     this->statusBar()->addPermanentWidget(ui->ZoomLabel);
     this->statusBar()->addPermanentWidget(ui->ZoomSlider);
+
+    ui->cropButton->setVisible(false);
+    ui->cancelButton->setVisible(false);
+    ui->statusBarLabel->setVisible(false);
 
     std::cerr << "Delta Image Viewer" << std::endl ;
 }
@@ -441,6 +449,10 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
     painter.drawRect(drawRect);
     ui->imageLabel->setPixmap(pix);
 
+    ui->statusBarLabel->setVisible(true);
+    ui->statusBarLabel->setText("Resmi kesmek istediğinize emin misiniz?");
+    ui->cropButton->setVisible(true);
+    ui->cancelButton->setVisible(true);
 
 }
 

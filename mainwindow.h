@@ -68,9 +68,10 @@ private slots:
 
     void on_previousButton_clicked();
 
-
     void mousePressEvent(QMouseEvent *event);
+
     void mouseMoveEvent(QMouseEvent *event);
+
     void mouseReleaseEvent(QMouseEvent *event);
 
 
@@ -88,10 +89,8 @@ private:
     int allImagesSize;
     int imgQue;
 
-
     QRubberBand *rubberBand;
     QPoint origin;
-    QPoint sonNokta;
 
     QPoint a;
     QPoint b;
