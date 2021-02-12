@@ -14,6 +14,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -71,8 +72,7 @@ private slots:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
-    void paintEvent(QPaintEvent *event);
-    void draw(QRect &rect);
+
 
 private:
     Ui::MainWindow *ui;
@@ -92,6 +92,9 @@ private:
     QRubberBand *rubberBand;
     QPoint origin;
     QPoint sonNokta;
+
+    QPoint a;
+    QPoint b;
 
 };
 #endif // MAINWINDOW_H

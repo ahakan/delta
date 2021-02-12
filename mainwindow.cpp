@@ -236,14 +236,25 @@ void MainWindow::on_brightnessSlider_valueChanged(int value)
 {
     if(!pix.isNull())
     {
-        openCVImage = cv::imread(fileName.toStdString());
+        if(!new_image.empty())
+        {
+            int beta = value-50;       /*< Simple brightness control */
+            ui->BrightnessLabel->setText("Brightness ("+QString::number(beta)+")");
+            openCVImage.convertTo(new_image, -1, 1, beta);
 
-        int beta = value-50;       /*< Simple brightness control */
+            updateImageLabel(new_image);
+        }
+        else
+        {
+            openCVImage = cv::imread(fileName.toStdString());
 
-        ui->BrightnessLabel->setText("Brightness ("+QString::number(beta)+")");
-        openCVImage.convertTo(new_image, -1, 1, beta);
+            int beta = value-50;       /*< Simple brightness control */
 
-        updateImageLabel(new_image);
+            ui->BrightnessLabel->setText("Brightness ("+QString::number(beta)+")");
+            openCVImage.convertTo(new_image, -1, 1, beta);
+
+            updateImageLabel(new_image);
+        }
     }
     else
     {
@@ -256,14 +267,25 @@ void MainWindow::on_ContrastSlider_valueChanged(int value)
 {
     if(!pix.isNull())
     {
-        openCVImage = cv::imread(fileName.toStdString());
+        if(!new_image.empty())
+        {
+            float alpha = value/100.0;       /*< Simple brightness control */
+            ui->ContrastLabel->setText("Contrast ("+QString::number(alpha)+")");
+            openCVImage.convertTo(new_image, -1, alpha, 0);
 
-        float alpha = value/100.0;       /*< Simple brightness control */
+            updateImageLabel(new_image);
+        }
+        else
+        {
+            openCVImage = cv::imread(fileName.toStdString());
 
-        ui->ContrastLabel->setText("Contrast ("+QString::number(alpha)+")");
-        openCVImage.convertTo(new_image, -1, alpha, 0);
+            float alpha = value/100.0;       /*< Simple brightness control */
 
-        updateImageLabel(new_image);
+            ui->ContrastLabel->setText("Contrast ("+QString::number(alpha)+")");
+            openCVImage.convertTo(new_image, -1, alpha, 0);
+
+            updateImageLabel(new_image);
+        }
     }
     else
     {
@@ -373,47 +395,55 @@ void MainWindow::on_previousButton_clicked()
     }
 }
 
-
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
-    ui->imageLabel->resize(ui->imageLabel->pixmap(Qt::ReturnByValue).size());
-    ui->scrollAreaWidgetContents->setMinimumSize(ui->imageLabel->pixmap(Qt::ReturnByValue).size());
-    ui->scrollAreaWidgetContents->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-
     origin = event->pos();
-    std::cerr << "X: " << std::to_string(origin.x()) << " Y: " << std::to_string(origin.y()) << std::endl;
-
-    if (!rubberBand)
-        rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
-    rubberBand->setGeometry(QRect(origin, QSize()));
+    rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
     rubberBand->show();
 }
+
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
     rubberBand->setGeometry(QRect(origin, event->pos()).normalized());
 }
 
+
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-    sonNokta = event->pos();
+    QRect myRect(origin, event->pos());
 
     rubberBand->hide();
 
+    QPoint a = mapToGlobal(origin);
+    QPoint b = event->globalPos();
+
+    a = ui->imageLabel->mapFromGlobal(a);
+    b = ui->imageLabel->mapFromGlobal(b);
+
+    double sx = ui->imageLabel->rect().width();
+    double sy = ui->imageLabel->rect().height();
+
+    sx = pix.width() / sx;
+    sy = pix.height() / sy;
+
+
+    a.setX(int(a.x() * sx));
+    a.setY(int(a.y() * sy));
+    b.setX(int(b.x() * sx));
+    b.setY(int(b.y() * sy));
+
+    std::cerr << "X: " << std::to_string(a.x()) << " - " << std::to_string(a.y()) << " Y: " << std::to_string(b.x()) << " - "<< std::to_string(b.y()) << std::endl;
+
+    QRect drawRect(a, b);
+
     QPainter painter(&pix);
-    painter.drawRect(origin.x()-164,origin.y()-36,sonNokta.x()-origin.x(),sonNokta.y()-origin.y());
+    painter.drawRect(drawRect);
     ui->imageLabel->setPixmap(pix);
 
-}
-
-void MainWindow::paintEvent(QPaintEvent *event)
-{
-    QRect rect = event->rect();
 
 }
 
-void MainWindow::draw(QRect &rect)
-{
 
-}
+
 
