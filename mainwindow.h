@@ -79,12 +79,16 @@ private slots:
 
     void on_cancelButton_clicked();
 
+    void on_cropButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 
     QString fileName;
     QString saveAsFileName;
+
     QPixmap pix;
+
     Mat openCVImage;
     Mat new_image;
 

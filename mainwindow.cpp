@@ -66,8 +66,9 @@ void MainWindow::updateImageLabel(Mat mat)
     QPixmap pixmap = mat2Pixmap(mat);
     ui->imageLabel->setPixmap(pixmap);
     //ui->imageLabel->resize( pix.width()/3, pix.height()/3 );
-    ui->imageLabel->resize( this->width()-166, this->height()-56);
+    //ui->imageLabel->resize( this->width()-166, this->height()-56);
 }
+
 
 void MainWindow::showPixmap(QPixmap image)
 {
@@ -77,13 +78,13 @@ void MainWindow::showPixmap(QPixmap image)
     {
         this->showMaximized();
         ui->imageLabel->setScaledContents(true);
-        ui->imageLabel->resize( this->width()-166, this->height()-56);
-        ui->scrollArea->resize( this->width()-166, this->height()-56);
-        ui->scrollAreaWidgetContents->resize( this->width()-166, this->height()-56);
+        ui->imageLabel->resize(this->width()-166, this->height()-70);
+        ui->scrollArea->resize(this->width()-166, this->height()-60);
+        ui->scrollAreaWidgetContents->resize(this->width()-166, this->height()-70);
     }
     else
     {
-        this->showNormal();
+        this->showMaximized();
         ui->imageLabel->setScaledContents(false);
     }
 
@@ -421,6 +422,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     origin = event->pos();
     rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
     rubberBand->show();
+    on_ZoomSlider_valueChanged(50);
 }
 
 
@@ -436,8 +438,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 
     rubberBand->hide();
 
-    QPoint a = mapToGlobal(origin);
-    QPoint b = event->globalPos();
+    a = mapToGlobal(origin);
+    b = event->globalPos();
 
     a = ui->imageLabel->mapFromGlobal(a);
     b = ui->imageLabel->mapFromGlobal(b);
@@ -463,7 +465,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
         std::cerr << "X: " << std::to_string(a.x()) << " - " << std::to_string(a.y()) << " Y: " << std::to_string(b.x()) << " - "<< std::to_string(b.y()) << std::endl;
 
         QPainter painter(&newPix);
-        painter.drawRect(drawRect);
+        painter.setOpacity(0.3);
+        painter.fillRect(drawRect, Qt::darkGray);
         ui->imageLabel->setPixmap(newPix);
         statusBarCheck(true, "Resmi kesmek istediğinize emin misiniz?");
     }
@@ -475,4 +478,20 @@ void MainWindow::on_cancelButton_clicked()
     statusBarCheck(false);
 
     ui->imageLabel->setPixmap(pix);
+}
+
+void MainWindow::on_cropButton_clicked()
+{
+    statusBarCheck(false);
+    showStatusBarMessage("Resim kesildi.");
+
+    openCVImage = cv::imread(fileName.toStdString());
+
+    std::cerr << "X: " << std::to_string(a.x()) << " - " << std::to_string(a.y()) << " Y: " << std::to_string(b.x()) << " - "<< std::to_string(b.y()) << std::endl;
+
+    Rect crop_region(a.x(), a.y(), b.x()-a.x(), b.y()-a.y());
+
+    new_image = openCVImage(crop_region);
+
+    updateImageLabel(new_image);
 }
