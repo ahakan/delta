@@ -369,6 +369,7 @@ void MainWindow::on_nextButton_clicked()
 
         showPixmap(nextImage);
         fileName=nextImage;
+        pix = nextImage;
         resetAllWidget();
 
         std::cerr << nextImage.toStdString() << std::endl ;
@@ -382,6 +383,7 @@ void MainWindow::on_nextButton_clicked()
 
         showPixmap(nextImage);
         fileName=nextImage;
+        pix = nextImage;
         resetAllWidget();
 
         std::cerr << nextImage.toStdString() << std::endl ;
@@ -399,6 +401,7 @@ void MainWindow::on_previousButton_clicked()
 
         showPixmap(nextImage);
         fileName=nextImage;
+        pix = nextImage;
         resetAllWidget();
 
         std::cerr << nextImage.toStdString() << std::endl ;
@@ -412,6 +415,7 @@ void MainWindow::on_previousButton_clicked()
 
         showPixmap(nextImage);
         fileName=nextImage;
+        pix = nextImage;
         resetAllWidget();
 
         std::cerr << nextImage.toStdString() << std::endl ;
