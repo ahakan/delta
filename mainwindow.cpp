@@ -65,6 +65,7 @@ void MainWindow::updateImageLabel(Mat mat)
 {
     QPixmap pixmap = mat2Pixmap(mat);
     ui->imageLabel->setPixmap(pixmap);
+    pix = pixmap;
     //ui->imageLabel->resize( pix.width()/3, pix.height()/3 );
     //ui->imageLabel->resize( this->width()-166, this->height()-56);
 }
@@ -268,7 +269,7 @@ void MainWindow::on_brightnessSlider_valueChanged(int value)
         }
         else
         {
-            openCVImage = cv::imread(fileName.toStdString());
+            openCVImage = imread(fileName.toStdString());
 
             int beta = value-50;       /*< Simple brightness control */
 
@@ -299,7 +300,7 @@ void MainWindow::on_ContrastSlider_valueChanged(int value)
         }
         else
         {
-            openCVImage = cv::imread(fileName.toStdString());
+            openCVImage = imread(fileName.toStdString());
 
             float alpha = value/100.0;       /*< Simple brightness control */
 
@@ -462,13 +463,16 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 
     if(!(a.x()<=0 || a.y()<=0 || b.x()<=0 || b.y()<=0))
     {
-        std::cerr << "X: " << std::to_string(a.x()) << " - " << std::to_string(a.y()) << " Y: " << std::to_string(b.x()) << " - "<< std::to_string(b.y()) << std::endl;
+        if(b.x()>a.x() && b.y()>a.y())
+        {
+            std::cerr << "X: " << std::to_string(a.x()) << " - " << std::to_string(a.y()) << " Y: " << std::to_string(b.x()) << " - "<< std::to_string(b.y()) << std::endl;
 
-        QPainter painter(&newPix);
-        painter.setOpacity(0.3);
-        painter.fillRect(drawRect, Qt::darkGray);
-        ui->imageLabel->setPixmap(newPix);
-        statusBarCheck(true, "Resmi kesmek istediğinize emin misiniz?");
+            QPainter painter(&newPix);
+            painter.setOpacity(0.3);
+            painter.fillRect(drawRect, Qt::darkGray);
+            ui->imageLabel->setPixmap(newPix);
+            statusBarCheck(true, "Resmi kesmek istediğinize emin misiniz?");
+        }
     }
 }
 
@@ -494,4 +498,6 @@ void MainWindow::on_cropButton_clicked()
     new_image = openCVImage(crop_region);
 
     updateImageLabel(new_image);
+
+
 }
