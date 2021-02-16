@@ -68,6 +68,9 @@ void MainWindow::updateImageLabel(Mat mat)
     pix = pixmap;
     //ui->imageLabel->resize( pix.width()/3, pix.height()/3 );
     //ui->imageLabel->resize( this->width()-166, this->height()-56);
+
+    imageInfo(pixmap);
+
 }
 
 
@@ -89,11 +92,21 @@ void MainWindow::showPixmap(QPixmap image)
         ui->imageLabel->setScaledContents(false);
     }
 
+    imageInfo(image);
 }
+
 
 void MainWindow::showStatusBarMessage(QString message)
 {
     this->statusBar()->showMessage(message);
+}
+
+
+void MainWindow::imageInfo(QPixmap image)
+{
+    ui->ImageInfoLabel->setText("Image Info");
+    ui->ImageWidthLabel->setText("Width: " + QString::number(image.width()) + "px");
+    ui->ImageHeightLabel->setText("Height: " + QString::number(image.height()) + "px");
 }
 
 

@@ -42,6 +42,8 @@ private slots:
 
     void statusBarCheck(bool trueFalse, QString question="");
 
+    void imageInfo(QPixmap image);
+
     void on_actionOpen_triggered();
 
     void on_OpenImageButton_clicked();
