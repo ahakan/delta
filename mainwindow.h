@@ -1,7 +1,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "opencv2/opencv.hpp"
+#include <opencv2/opencv.hpp>
+#include <leptonica/allheaders.h>
+#include <tesseract/baseapi.h>
+#include "imageread.h"
 
 #include <QMainWindow>
 #include <QDialog>
@@ -20,6 +23,7 @@ namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 using namespace cv;
+using namespace tesseract;
 
 class MainWindow : public QMainWindow
 {
@@ -83,6 +87,8 @@ private slots:
 
     void on_cropButton_clicked();
 
+    void on_readButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -93,6 +99,9 @@ private:
 
     Mat openCVImage;
     Mat new_image;
+
+    TessBaseAPI *ocr;
+    QString outText;
 
     QString base;
     QStringList allImages;

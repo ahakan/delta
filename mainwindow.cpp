@@ -518,3 +518,50 @@ void MainWindow::on_cropButton_clicked()
 
 
 }
+
+void MainWindow::on_readButton_clicked()
+{
+    ocr = new TessBaseAPI();
+    ocr->Init(NULL, "eng", OEM_LSTM_ONLY);
+
+    if(!pix.isNull())
+    {
+        if(!new_image.empty())
+        {
+            ocr->SetPageSegMode(PSM_AUTO);
+            ocr->SetImage(new_image.data, new_image.cols, new_image.rows, 3, new_image.step);
+
+            outText = QString(ocr->GetUTF8Text());
+
+            ocr->End();
+        }
+        else
+        {
+            openCVImage = imread(fileName.toStdString());
+
+            ocr->SetPageSegMode(PSM_AUTO);
+            ocr->SetImage(openCVImage.data, openCVImage.cols, openCVImage.rows, 3, openCVImage.step);
+
+            outText = QString(ocr->GetUTF8Text());
+
+            ocr->End();
+        }
+    }
+    else
+    {
+        showStatusBarMessage("Lütfen önce resim seçiniz.");
+    }
+
+    std::cerr << "Text:" << outText.toStdString() << std::endl;
+    std::cerr << "Son" << std::endl;
+
+    if(outText.length() > 3)
+    {
+        ImageRead *a = new ImageRead(outText);
+        a->show();
+    }
+    else
+    {
+        showStatusBarMessage("Resimde yazı tespit edilmemiştir.");
+    }
+}
