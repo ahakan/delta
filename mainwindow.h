@@ -89,6 +89,8 @@ private slots:
 
     void on_readButton_clicked();
 
+    void on_actionRead_Image_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -103,6 +105,7 @@ private:
     TessBaseAPI *ocr;
     QString outText;
 
+    QString imageName;
     QString base;
     QStringList allImages;
     int allImagesSize;

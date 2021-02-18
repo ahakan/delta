@@ -116,7 +116,9 @@ void MainWindow::getImageDirFiles(QString fileName){
         QFileInfo fi(fileName);
         base = fi.absolutePath();
 
-        //std::cerr << fi.fileName().toStdString() << std::endl ;
+        imageName = fi.fileName();
+
+        std::cerr << fi.fileName().toStdString() << std::endl ;
 
         std::cerr << "Image directory: " + base.toStdString() << std::endl ;
 
@@ -534,6 +536,19 @@ void MainWindow::on_readButton_clicked()
             outText = QString(ocr->GetUTF8Text());
 
             ocr->End();
+
+            std::cerr << "Text:" << outText.toStdString() << std::endl;
+            std::cerr << "Son" << std::endl;
+
+            if(outText.length() > 3)
+            {
+                ImageRead *a = new ImageRead(outText, imageName, base);
+                a->show();
+            }
+            else
+            {
+                showStatusBarMessage("Resimde yazı tespit edilmemiştir.");
+            }
         }
         else
         {
@@ -545,6 +560,19 @@ void MainWindow::on_readButton_clicked()
             outText = QString(ocr->GetUTF8Text());
 
             ocr->End();
+
+            std::cerr << "Text:" << outText.toStdString() << std::endl;
+            std::cerr << "Son" << std::endl;
+
+            if(outText.length() > 3)
+            {
+                ImageRead *a = new ImageRead(outText, imageName, base);
+                a->show();
+            }
+            else
+            {
+                showStatusBarMessage("Resimde yazı tespit edilmemiştir.");
+            }
         }
     }
     else
@@ -552,16 +580,10 @@ void MainWindow::on_readButton_clicked()
         showStatusBarMessage("Lütfen önce resim seçiniz.");
     }
 
-    std::cerr << "Text:" << outText.toStdString() << std::endl;
-    std::cerr << "Son" << std::endl;
+}
 
-    if(outText.length() > 3)
-    {
-        ImageRead *a = new ImageRead(outText);
-        a->show();
-    }
-    else
-    {
-        showStatusBarMessage("Resimde yazı tespit edilmemiştir.");
-    }
+
+void MainWindow::on_actionRead_Image_triggered()
+{
+    on_readButton_clicked();
 }
