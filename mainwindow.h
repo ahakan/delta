@@ -117,5 +117,8 @@ private:
     QPoint a;
     QPoint b;
 
+    int beta = 0;
+    float alpha = 1.0;
+
 };
 #endif // MAINWINDOW_H

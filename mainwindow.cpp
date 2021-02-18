@@ -274,25 +274,16 @@ void MainWindow::on_brightnessSlider_valueChanged(int value)
 {
     if(!pix.isNull())
     {
-        if(!new_image.empty())
-        {
-            int beta = value-50;       /*< Simple brightness control */
-            ui->BrightnessLabel->setText("Brightness ("+QString::number(beta)+")");
-            openCVImage.convertTo(new_image, -1, 1, beta);
 
-            updateImageLabel(new_image);
-        }
-        else
-        {
-            openCVImage = imread(fileName.toStdString());
+        openCVImage = imread(fileName.toStdString());
 
-            int beta = value-50;       /*< Simple brightness control */
+        beta = value-50;       /*< Simple brightness control */
 
-            ui->BrightnessLabel->setText("Brightness ("+QString::number(beta)+")");
-            openCVImage.convertTo(new_image, -1, 1, beta);
+        ui->BrightnessLabel->setText("Brightness ("+QString::number(beta)+")");
+        openCVImage.convertTo(new_image, -1, alpha, beta);
 
-            updateImageLabel(new_image);
-        }
+        updateImageLabel(new_image);
+
     }
     else
     {
@@ -305,25 +296,16 @@ void MainWindow::on_ContrastSlider_valueChanged(int value)
 {
     if(!pix.isNull())
     {
-        if(!new_image.empty())
-        {
-            float alpha = value/100.0;       /*< Simple brightness control */
-            ui->ContrastLabel->setText("Contrast ("+QString::number(alpha)+")");
-            openCVImage.convertTo(new_image, -1, alpha, 0);
 
-            updateImageLabel(new_image);
-        }
-        else
-        {
-            openCVImage = imread(fileName.toStdString());
+        openCVImage = imread(fileName.toStdString());
 
-            float alpha = value/100.0;       /*< Simple brightness control */
+        alpha = value/100.0;       /*< Simple brightness control */
 
-            ui->ContrastLabel->setText("Contrast ("+QString::number(alpha)+")");
-            openCVImage.convertTo(new_image, -1, alpha, 0);
+        ui->ContrastLabel->setText("Contrast ("+QString::number(alpha)+")");
+        openCVImage.convertTo(new_image, -1, alpha, beta);
 
-            updateImageLabel(new_image);
-        }
+        updateImageLabel(new_image);
+
     }
     else
     {
