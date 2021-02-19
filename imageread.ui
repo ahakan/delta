@@ -13,16 +13,6 @@
   <property name="windowTitle">
    <string>Image Text</string>
   </property>
-  <widget class="QTextBrowser" name="textBrowser">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>521</width>
-     <height>381</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QPushButton" name="saveButton">
    <property name="geometry">
     <rect>
@@ -47,6 +37,19 @@
    </property>
    <property name="text">
     <string>Cancel</string>
+   </property>
+  </widget>
+  <widget class="QPlainTextEdit" name="plainTextEdit">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>20</y>
+     <width>521</width>
+     <height>361</height>
+    </rect>
+   </property>
+   <property name="plainText">
+    <string/>
    </property>
   </widget>
  </widget>

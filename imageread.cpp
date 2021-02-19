@@ -10,7 +10,10 @@ ImageRead::ImageRead(QString data, QString imgName, QString imgDirectory, QWidge
     name = imgName;
     directory = imgDirectory;
 
-    ui->textBrowser->setText(text);
+    this->setWindowTitle(name + " - Image Text");
+    ui->plainTextEdit->appendPlainText(name);
+    ui->plainTextEdit->appendPlainText("");
+    ui->plainTextEdit->appendPlainText(text);
 }
 
 ImageRead::~ImageRead()
@@ -29,9 +32,7 @@ void ImageRead::on_saveButton_clicked()
     if ( file.open(QIODevice::ReadWrite) )
     {
         QTextStream stream( &file );
-        stream << name << Qt::endl;
-        stream << "" << Qt::endl;
-        stream << text;
+        stream << ui->plainTextEdit->toPlainText();
     }
 
     this->close();
