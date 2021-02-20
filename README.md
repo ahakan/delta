@@ -2,6 +2,8 @@
 
 An open source image viewer
 
+![deltaimageviewer](https://raw.githubusercontent.com/AHakan/delta/master/ss.png)
+
 ## New features
 
   - Crop a picture
