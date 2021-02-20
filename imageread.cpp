@@ -11,8 +11,6 @@ ImageRead::ImageRead(QString data, QString imgName, QString imgDirectory, QWidge
     directory = imgDirectory;
 
     this->setWindowTitle(name + " - Image Text");
-    ui->plainTextEdit->appendPlainText(name);
-    ui->plainTextEdit->appendPlainText("");
     ui->plainTextEdit->appendPlainText(text);
 }
 
