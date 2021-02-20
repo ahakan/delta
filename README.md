@@ -1,4 +1,4 @@
-# DELTA IMAGE VIEWER
+# Delta Image Viewer
 
 An open source image viewer
 
